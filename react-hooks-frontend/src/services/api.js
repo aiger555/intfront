@@ -11,87 +11,121 @@ const api = axios.create({
 
 // Get all journals
 export const getAllJournals = async () => {
-    const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
-    if (!token) {
-      throw new Error("User not authenticated. Please log in.");
-    }
-  
-    try {
-      const response = await fetch("http://localhost:8090/journals", {
-        headers: {
-          Authorization: `Bearer ${token}`, // Add the token to the Authorization header
-          "Content-Type": "application/json",
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-  
-      return await response.json(); // Assuming the API returns JSON
-    } catch (error) {
-      console.error("API error:", error);
-      throw error; // Rethrow the error to handle it in the component
-    }
-  };
-  
+  const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+  if (!token) {
+    throw new Error("User not authenticated. Please log in.");
+  }
+
+  try {
+    const response = await api.get("/", {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the Authorization header
+      },
+    });
+    return response.data; // Return the list of journals
+  } catch (error) {
+    console.error("Error fetching journals:", error);
+    throw error;
+  }
+};
 
 // Get a single journal by ID
 export const getJournalById = async (id) => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    throw new Error("User not authenticated. Please log in.");
+  }
+
   try {
-    const response = await api.get(`/${id}`);
-    return response.data;
+    const response = await api.get(`/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data; // Return the journal by ID
   } catch (error) {
-    console.error('Error fetching journal by ID', error);
+    console.error("Error fetching journal by ID", error);
+    throw error;
   }
 };
 
 // Create a new journal
-export const createJournal = async (journal, token) => {
+export const createJournal = async (journal) => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    throw new Error("User not authenticated. Please log in.");
+  }
+
   try {
     const response = await api.post('/create', journal, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data;
+    return response.data; // Return the created journal
   } catch (error) {
     console.error('Error creating journal', error);
+    throw error;
   }
 };
 
 // Update an existing journal
-export const updateJournal = async (id, journal, token) => {
+export const updateJournal = async (id, journal) => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    throw new Error("User not authenticated. Please log in.");
+  }
+
   try {
     const response = await api.put(`/update/${id}`, journal, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data;
+    return response.data; // Return the updated journal
   } catch (error) {
     console.error('Error updating journal', error);
+    throw error;
   }
 };
 
 // Delete a journal
-export const deleteJournal = async (id, token) => {
+export const deleteJournal = async (id) => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    throw new Error("User not authenticated. Please log in.");
+  }
+
   try {
     await api.delete(`/delete/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   } catch (error) {
     console.error('Error deleting journal', error);
+    throw error;
   }
 };
 
 // Get favorite journals
-export const getFavoriteJournals = async (token) => {
+export const getFavoriteJournals = async () => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    throw new Error("User not authenticated. Please log in.");
+  }
+
   try {
     const response = await api.get('/favorites', {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data;
+    return response.data; // Return favorite journals
   } catch (error) {
     console.error('Error fetching favorite journals', error);
+    throw error;
   }
 };
+
+
+
+
+
+
+
 
 export const registerUser = async (userData) => {
     try {
