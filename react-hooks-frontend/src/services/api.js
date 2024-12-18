@@ -11,13 +11,17 @@ const api = axios.create({
 
 // Get all journals
 export const getAllJournals = async () => {
-  try {
-    const response = await api.get('/');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching journals', error);
-  }
-};
+    try {
+      const response = await fetch("http://localhost:8090/journals"); // Replace with your actual API URL
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return await response.json(); // Assuming the API returns JSON
+    } catch (error) {
+      console.error("API error:", error);
+      throw error; // Rethrow the error to handle it in the component
+    }
+  };
 
 // Get a single journal by ID
 export const getJournalById = async (id) => {
