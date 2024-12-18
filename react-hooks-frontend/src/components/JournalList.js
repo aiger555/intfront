@@ -1,31 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { getAllJournals } from "../services/api"; // Ensure this path is correct
+import React, { useEffect, useState } from 'react';
+import { getAllJournals } from '../services/api';
+import { Redirect } from 'react-router-dom';
 
 const JournalList = () => {
-  const [journals, setJournals] = useState([]); // State to hold journal data
-  const [loading, setLoading] = useState(true); // State to manage loading status
-  const [error, setError] = useState(null); // State to manage errors
+  const [journals, setJournals] = useState([]);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const fetchJournals = async () => {
-      try {
-        const data = await getAllJournals();
-        console.log("Fetched journals:", data); // Log for debugging
-        setJournals(data || []); // Default to empty array if data is null/undefined
-      } catch (err) {
-        console.error("Error fetching journals:", err);
-        setError("Failed to fetch journals. Please try again later.");
-      } finally {
-        setLoading(false); // Ensure loading is disabled after fetching
-      }
-    };
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      setIsAuthenticated(false);
+    } else {
+      setIsAuthenticated(true);
+      const fetchJournals = async () => {
+        try {
+          const data = await getAllJournals();
+          setJournals(data);
+        } catch (error) {
+          console.error('Error fetching journals:', error);
+        }
+      };
 
-    fetchJournals();
+      fetchJournals();
+    }
   }, []);
 
-  if (loading) return <p>Loading journals...</p>;
-  if (error) return <p>{error}</p>;
-  if (!journals.length) return <p>No journals found</p>;
+  if (!isAuthenticated) {
+    return <Redirect to="/login" />;
+  }
 
   return (
     <div>
