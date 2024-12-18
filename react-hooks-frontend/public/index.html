@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#007bff" />
+    <meta
+      name="description"
+      content="React frontend for the Spring Boot backend application."
+    />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!-- Add Bootstrap for styling (optional) -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      integrity="sha384-DNXGoVh50KHfhkqPbr12ch3fTFm3gKlydzvMbM4TPrlT5inmc9NRHqlDYfD/4GmH"
+      crossorigin="anonymous"
+    />
+    <!-- CSRF Token for secure communication -->
+    <meta name="csrf-token" content="" />
+    <!-- Dynamic title -->
+    <title>My React Spring App</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!-- Add a script to include CSRF token dynamically -->
+    <script>
+      // Fetch CSRF token from backend (if needed)
+      fetch('/csrf-token')
+        .then((response) => response.json())
+        .then((data) => {
+          document
+            .querySelector('meta[name="csrf-token"]')
+            .setAttribute('content', data.token);
+        })
+        .catch((error) => console.error('Error fetching CSRF token:', error));
+    </script>
+    <!-- Bootstrap JS and Popper.js (optional) -->
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5+5hb7xDjMlwupHigNT/gKD4i9Y6t1fjtK1Z3A0y"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+      integrity="sha384-oBqDVmMz4fnFO9gybDB8fYPjE8JSk4z6wRQL3cwHv3zBrYABhE+KQ68p82b2YrSk"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+      integrity="sha384-DG7ykCzqXcGnMQxUGOzSLV8tQFdReevU06k2VoIXUoKkzlR12MjtE5ejCRZ1y95G"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
