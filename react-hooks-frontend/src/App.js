@@ -1,39 +1,19 @@
-import './App.css';
+import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import FooterComponent from './components/FooterComponent';
-import HeaderComponent from './components/HeaderComponent';
-import ListUsersComponent from './components/ListUsersComponent';
-import ListJournalsComponent from './components/ListJournalsComponent';
-import AddUserComponent from './components/AddUserComponent';
-import AddJournalComponent from './components/AddJournalComponent';
-import EditUserComponent from './components/EditUserComponent';
-import EditJournalComponent from './components/EditJournalComponent';
+import HomePage from './pages/HomePage';
+import JournalPage from './pages/JournalPage';
+import Header from './components/Header';
 
-function App() {
+const App = () => {
   return (
-    <div>
-      <Router>
-        <HeaderComponent />
-        <div className="container">
-          <Switch>
-            {/* Home route */}
-            <Route exact path="/" component={ListUsersComponent}></Route>
-            
-            {/* User routes */}
-            <Route path="/users" component={ListUsersComponent}></Route>
-            <Route path="/add-user" component={AddUserComponent}></Route>
-            <Route path="/edit-user/:id" component={EditUserComponent}></Route>
-            
-            {/* Journal routes */}
-            <Route path="/journals" component={ListJournalsComponent}></Route>
-            <Route path="/add-journal" component={AddJournalComponent}></Route>
-            <Route path="/edit-journal/:id" component={EditJournalComponent}></Route>
-          </Switch>
-        </div>
-        <FooterComponent />
-      </Router>
-    </div>
+    <Router>
+      <Header />
+      <Switch>
+        <Route path="/" exact component={HomePage} />
+        <Route path="/journals/:id" component={JournalPage} />
+      </Switch>
+    </Router>
   );
-}
+};
 
 export default App;
