@@ -6,31 +6,60 @@ export default function EditJournal() {
   let navigate = useNavigate();
   const { id } = useParams();
 
+  // State to store journal data
   const [journal, setJournal] = useState({
     title: "",
-    author: "",
-    description: "",
+    content: "",
+    status: "",
+    favorite: false,
   });
 
-  const { title, author, description } = journal;
+  const { title, content, status, favorite } = journal;
 
   const onInputChange = (e) => {
-    setJournal({ ...journal, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setJournal((prevState) => ({
+      ...prevState,
+      [name]: name === "favorite" ? e.target.checked : value, // Handle boolean for 'favorite'
+    }));
   };
 
+  // Fetch journal details when component mounts
   useEffect(() => {
     loadJournal();
   }, []);
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    await axios.put(`http://localhost:8090/journals/update/${id}`, journal);
-    navigate("/");
+  const loadJournal = async () => {
+    try {
+      const result = await axios.get(`http://localhost:8090/journals/${id}`);
+      setJournal(result.data); // Set the journal data to state
+    } catch (error) {
+      console.error("Error loading journal:", error);
+      alert("Failed to load journal data.");
+    }
   };
 
-  const loadJournal = async () => {
-    const result = await axios.get(`http://localhost:8090/journals/update/${id}`);
-    setJournal(result.data);
+  // Submit the updated journal data
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token"); // Get token from localStorage
+      if (!token) {
+        navigate("/login"); // Redirect to login if no token
+        return;
+      }
+
+      await axios.put(`http://localhost:8090/journals/update/${id}`, journal, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include token in request header
+        },
+      });
+
+      navigate("/"); // Redirect after successful update
+    } catch (error) {
+      console.error("Error updating journal:", error);
+      alert("Failed to update the journal. Please try again.");
+    }
   };
 
   return (
@@ -39,9 +68,10 @@ export default function EditJournal() {
         <div className="col-md-6 offset-md-3 border rounded p-4 mt-2 shadow">
           <h2 className="text-center m-4">Edit Journal</h2>
 
-          <form onSubmit={(e) => onSubmit(e)}>
+          <form onSubmit={onSubmit}>
+            {/* Title Field */}
             <div className="mb-3">
-              <label htmlFor="Title" className="form-label">
+              <label htmlFor="title" className="form-label">
                 Title
               </label>
               <input
@@ -50,34 +80,54 @@ export default function EditJournal() {
                 placeholder="Enter journal title"
                 name="title"
                 value={title}
-                onChange={(e) => onInputChange(e)}
+                onChange={onInputChange}
               />
             </div>
+
+            {/* Content Field */}
             <div className="mb-3">
-              <label htmlFor="Author" className="form-label">
-                Author
+              <label htmlFor="content" className="form-label">
+                Content
+              </label>
+              <textarea
+                className="form-control"
+                placeholder="Enter journal content"
+                name="content"
+                value={content}
+                onChange={onInputChange}
+              />
+            </div>
+
+            {/* Status Field */}
+            <div className="mb-3">
+              <label htmlFor="status" className="form-label">
+                Status
               </label>
               <input
                 type="text"
                 className="form-control"
-                placeholder="Enter author name"
-                name="author"
-                value={author}
-                onChange={(e) => onInputChange(e)}
+                placeholder="Enter journal status"
+                name="status"
+                value={status}
+                onChange={onInputChange}
               />
             </div>
+
+            {/* Favorite Field */}
             <div className="mb-3">
-              <label htmlFor="Description" className="form-label">
-                Description
+              <label htmlFor="favorite" className="form-label">
+                Favorite
               </label>
-              <textarea
-                className="form-control"
-                placeholder="Enter journal description"
-                name="description"
-                value={description}
-                onChange={(e) => onInputChange(e)}
+              <input
+                type="checkbox"
+                className="form-check-input"
+                name="favorite"
+                checked={favorite}
+                onChange={onInputChange}
               />
             </div>
+
+            {/* Submit Button */}
             <button type="submit" className="btn btn-outline-primary">
               Submit
             </button>
