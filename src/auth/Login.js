@@ -12,18 +12,29 @@ export default function Login() {
     const { name, value } = e.target;
     setCredentials({ ...credentials, [name]: value });
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post("http://localhost:8090/auth/signin", credentials);
-      localStorage.setItem("token", response.data.token); // Save token in localStorage
-      navigate("/"); // Redirect to home page after login
+      
+      // Check the token structure
+      console.log("Received token:", response.data.token); // Log to verify the token format
+  
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token); // Save token in localStorage
+        navigate("/"); // Redirect to home page after login
+      } else {
+        alert("Login failed. No token received.");
+      }
     } catch (error) {
       console.error("Login failed", error);
       alert("Login failed. Please check your credentials.");
     }
   };
+  
+
 
   // Use effect to redirect if token exists (i.e. the user is already authenticated)
   useEffect(() => {
