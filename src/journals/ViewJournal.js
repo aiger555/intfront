@@ -7,6 +7,7 @@ export default function ViewJournal() {
     title: "",
     author: "",
     description: "",
+    imageUrl: "", // Added imageUrl to hold the image URL
   });
 
   const { id } = useParams();
@@ -16,8 +17,12 @@ export default function ViewJournal() {
   }, []);
 
   const loadJournal = async () => {
-    const result = await axios.get(`http://localhost:8090/journals/${id}`);
-    setJournal(result.data);
+    try {
+      const result = await axios.get(`http://localhost:8090/journals/${id}`);
+      setJournal(result.data); // Assuming the response contains the image URL
+    } catch (error) {
+      console.error("Error loading journal:", error);
+    }
   };
 
   return (
@@ -34,11 +39,25 @@ export default function ViewJournal() {
                   <b>Title:</b> {journal.title}
                 </li>
                 <li className="list-group-item">
-                  <b>Author:</b> {journal.author}
+                  <b>Content:</b> {journal.content}
                 </li>
                 <li className="list-group-item">
-                  <b>Description:</b> {journal.description}
+                  <b>Status:</b> {journal.status}
                 </li>
+                <li className="list-group-item">
+                  <b>Favorite:</b> {journal.favorite ? "Yes" : "No"}
+                </li>
+                {/* Display image if it exists */}
+                {journal.imageUrl && (
+                  <li className="list-group-item">
+                    <b>Image:</b>
+                    <img
+                      src={journal.imageUrl}
+                      alt="Journal"
+                      style={{ maxWidth: "100%", height: "auto" }}
+                    />
+                  </li>
+                )}
               </ul>
             </div>
           </div>

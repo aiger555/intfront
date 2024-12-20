@@ -7,6 +7,7 @@ import Register from "./auth/Register"; // Import Register component
 import AddJournal from "./journals/AddJournal";
 import EditJournal from "./journals/EditJournal";
 import ViewJournal from "./journals/ViewJournal";
+import JournalImageManager from "./journals/JournalImageManager"; // Import JournalImageManager component
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -19,8 +20,6 @@ function App() {
           {/* Home page */}
           <Route exact path="/" element={<Home />} />
 
-          {/* <Route exact path="/journals" element={<Journals />} /> */}
-          
           {/* Add Journal page */}
           <Route exact path="/addjournal" element={<AddJournal />} />
           
@@ -29,6 +28,9 @@ function App() {
           
           {/* View Journal page */}
           <Route exact path="/viewjournal/:id" element={<ViewJournal />} />
+          
+          {/* Journal Image Management page */}
+          <Route exact path="/journal/:journalId/manage-image" element={<JournalImageManager />} />
           
           {/* Login page */}
           <Route exact path="/login" element={<Login />} />
