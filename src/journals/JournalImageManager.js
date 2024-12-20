@@ -6,28 +6,26 @@ const JournalImageManager = () => {
   const { journalId } = useParams();
   const navigate = useNavigate();
 
-  const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState('');
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Fetch existing image when component mounts
+  // Fetch image URL when the component mounts
   useEffect(() => {
-    loadImage();
+    fetchImageUrl();
   }, []);
 
-  const loadImage = async () => {
+  const fetchImageUrl = async () => {
     try {
       const response = await axios.get(`http://localhost:8090/journals/download/image/${journalId}`);
-      if (response.data) {
-        setImage(response.data); // Store image data in state
-      }
+      setImageUrl(response.data); // Set image URL in state
     } catch (error) {
-      console.error("Error fetching image:", error);
+      console.error('Error fetching image URL:', error);
+      setError('Failed to load image.');
     }
   };
 
-  // Check if token exists and is valid before performing actions
   const getAuthToken = () => {
     const token = localStorage.getItem('authToken');
     if (!token) {
@@ -65,7 +63,7 @@ const JournalImageManager = () => {
 
       setLoading(false);
       if (response.status === 200) {
-        setImage(response.data);
+        fetchImageUrl(); // Reload image URL
         alert('Image uploaded successfully!');
       } else {
         setError('Image upload failed.');
@@ -75,6 +73,11 @@ const JournalImageManager = () => {
       console.error('Error uploading image:', err);
       setError('Error uploading image.');
     }
+  };
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+    setError('');
   };
 
   const handleImageDelete = async () => {
@@ -94,7 +97,7 @@ const JournalImageManager = () => {
 
       setLoading(false);
       if (response.status === 200) {
-        setImage(null);
+        setImageUrl(''); // Clear image URL
         alert('Image deleted successfully!');
       } else {
         setError('Failed to delete image.');
@@ -103,50 +106,6 @@ const JournalImageManager = () => {
       setLoading(false);
       console.error('Error deleting image:', err);
       setError('Error deleting image.');
-    }
-  };
-
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
-    setError('');
-  };
-
-  const handleEditImage = async () => {
-    const token = getAuthToken();
-    if (!token) return;
-
-    if (!file) {
-      setError('No file selected!');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      setLoading(true);
-      const response = await axios.put(
-        `http://localhost:8090/journals/${journalId}/image/edit`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setLoading(false);
-      if (response.status === 200) {
-        setImage(response.data);
-        alert('Image updated successfully!');
-      } else {
-        setError('Failed to update image.');
-      }
-    } catch (err) {
-      setLoading(false);
-      console.error('Error editing image:', err);
-      setError('Error editing image.');
     }
   };
 
@@ -159,11 +118,12 @@ const JournalImageManager = () => {
         </div>
         <div className="card-body">
           <div className="mb-3">
-            {image ? (
+            {imageUrl ? (
               <>
+                <p>Image URL: <a href={imageUrl} target="_blank" rel="noopener noreferrer">{imageUrl}</a></p>
                 <img
-                  src={`http://localhost:8090/journals/download/image/${journalId}`}
-                  alt="Journal Image"
+                  src={imageUrl}
+                  alt="Journal"
                   className="img-fluid"
                   style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'contain' }}
                 />
@@ -197,16 +157,6 @@ const JournalImageManager = () => {
             >
               {loading ? 'Uploading...' : 'Upload Image'}
             </button>
-
-            {image && (
-              <button
-                onClick={handleEditImage}
-                className="btn btn-warning"
-                disabled={loading}
-              >
-                {loading ? 'Updating...' : 'Edit Image'}
-              </button>
-            )}
           </div>
         </div>
       </div>
