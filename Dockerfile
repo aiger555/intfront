@@ -22,8 +22,8 @@ FROM nginx:alpine
 # Step 8: Copy build files to Nginx's default public directory
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Step 9: Expose port 90
-EXPOSE 90
+# Step 9: Expose port 80
+EXPOSE 80
 
 # Step 10: Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
