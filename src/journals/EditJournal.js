@@ -14,6 +14,9 @@ export default function EditJournal() {
     favorite: false,
   });
 
+  // State to handle image
+  const [imageFile, setImageFile] = useState(null);
+
   const { title, content, status, favorite } = journal;
 
   const onInputChange = (e) => {
@@ -39,6 +42,11 @@ export default function EditJournal() {
     }
   };
 
+  // Handle image file change
+  const onImageChange = (e) => {
+    setImageFile(e.target.files[0]); // Update the state with the selected image file
+  };
+
   // Submit the updated journal data
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -49,6 +57,30 @@ export default function EditJournal() {
         return;
       }
 
+      // First, upload the image if it exists
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("file", imageFile);
+
+        const uploadResponse = await axios.post(
+          `http://localhost:8090/journals/${id}/upload`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        
+
+        // Update journal object with the uploaded image URL
+        if (uploadResponse.data.imageUrl) {
+          journal.imageUrl = uploadResponse.data.imageUrl;
+        }
+      }
+
+      // Update journal details
       await axios.put(`http://localhost:8090/journals/update/${id}`, journal, {
         headers: {
           Authorization: `Bearer ${token}`, // Include token in request header
@@ -124,6 +156,19 @@ export default function EditJournal() {
                 name="favorite"
                 checked={favorite}
                 onChange={onInputChange}
+              />
+            </div>
+
+            {/* Image Upload Field */}
+            <div className="mb-3">
+              <label htmlFor="image" className="form-label">
+                Upload Image
+              </label>
+              <input
+                type="file"
+                className="form-control"
+                name="image"
+                onChange={onImageChange}
               />
             </div>
 
